@@ -440,6 +440,7 @@
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MAIL_SERVER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;your-email-server.com&quot;</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MAIL_TLS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MAIL_SSL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MAIL_DEFAULT_SENDER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;your-email@your-domain.com&quot;</span>
     <span class="n">mail</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span>
