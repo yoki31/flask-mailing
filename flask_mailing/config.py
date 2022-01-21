@@ -26,7 +26,7 @@ class ConnectionConfig(Settings):
     VALIDATE_CERTS: bool = True
 
     @validator("MAIL_TEMPLATE_FOLDER")
-    def template_folder_validator(cls, v):
+    def template_folder_validator(cls, v:str) -> str:
         """Validate the template folder directory."""
         if not v:
             return
@@ -41,7 +41,7 @@ class ConnectionConfig(Settings):
         folder = self.MAIL_TEMPLATE_FOLDER
 
         if not folder:
-            template_env = current_app.jinja_env
+            template_env:"Environment" = current_app.jinja_env
 
         else:
             template_env: "Environment" = Environment(loader=FileSystemLoader(folder))
@@ -51,7 +51,7 @@ class ConnectionConfig(Settings):
 
 def path_traversal(fp: Path) -> bool:
     """Check for path traversal vulnerabilities."""
-    base = Path(__file__).parent.parent
+    base:"Path" = Path(__file__).parent.parent
     try:
         base.joinpath(fp).resolve().relative_to(base.resolve())
     except ValueError:

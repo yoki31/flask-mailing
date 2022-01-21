@@ -35,35 +35,39 @@ class MailMsg:
     according to the MIME standard
     """
 
-    def __init__(self, **entries):
+    def __init__(self, **entries) -> None:
         self.__dict__.update(entries)
-        self.msgId = make_msgid()
+        self.msgId:str = make_msgid()
 
-    def _mimetext(self, text, subtype="plain"):
+    def _mimetext(self, text, subtype="plain") -> 'MIMEText':
         """Creates a MIMEText object"""
 
         return MIMEText(text, _subtype=subtype, _charset=self.charset)
 
-    async def attach_file(self, message, attachment: t.List["FileStorage"]):
+    async def attach_file(
+        self, 
+        message:str, 
+        attachment: t.List["FileStorage"]
+        ):
         """Creates a MIMEBase object"""
         for file, file_meta in attachment:
             if file_meta and "mime_type" in file_meta and "mime_subtype" in file_meta:
-                part = MIMEBase(
+                part:"MIMEBase" = MIMEBase(
                     _maintype=file_meta["mime_type"], _subtype=file_meta["mime_subtype"]
                 )
             else:
-                part = MIMEBase(_maintype="application", _subtype="octet-stream")
+                part:"MIMEBase" = MIMEBase(_maintype="application", _subtype="octet-stream")
 
             part.set_payload(file.read())
             encode_base64(part)
 
-            filename = file.filename
+            filename:str = file.filename
 
             try:
                 filename and filename.encode("ascii")
             except UnicodeEncodeError:
                 if not PY3:
-                    filename = filename.encode("utf8")
+                    filename:bytes = filename.encode("utf8")
 
             filename = ("UTF8", "", filename)
 
@@ -76,7 +80,7 @@ class MailMsg:
     async def _message(self, sender):
         """Creates the email message"""
 
-        self.message = MIMEMultipart(self.multipart_subtype.value)
+        self.message:"MIMEMultipart" = MIMEMultipart(self.multipart_subtype.value)
 
         self.message.set_charset(self.charset)
         self.message["Date"] = formatdate(time.time(), localtime=True)
@@ -119,14 +123,14 @@ class MailMsg:
 
         return self.message
 
-    async def as_string(self):
+    async def as_string(self) -> str:
         return await self._message().as_string()
 
-    def as_bytes(self):
+    def as_bytes(self) -> bytes:
         return self._message().as_bytes()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.as_string()
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.as_bytes()

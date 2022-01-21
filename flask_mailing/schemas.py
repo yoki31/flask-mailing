@@ -3,7 +3,7 @@ import os
 import sys
 from enum import Enum
 from mimetypes import MimeTypes
-from typing import Dict, List, Optional, Union
+from typing import *
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -49,36 +49,40 @@ class Message(BaseModel):
     multipart_subtype: MultipartSubtypeEnum = MultipartSubtypeEnum.mixed
 
     @validator("template_params")
-    def validate_template_params(cls, value, values):
+    def validate_template_params(
+        cls, 
+        value:Any, 
+        values:Dict[Any, Any]
+        ) -> Dict:
 
         if values.get("template_body", None) is None:
             values["template_body"] = value
         return value
 
     @validator("attachments")
-    def validate_file(cls, v):
-        temp = []
-        mime = MimeTypes()
+    def validate_file(cls, v:Any) -> List[Tuple[FileStorage, Dict]]:
+        temp:List[Tuple[FileStorage, Dict]] = []
+        mime:"MimeTypes" = MimeTypes()
 
         for file in v:
-            file_meta = None
+            file_meta:Optional[Dict[Any, Any]] = None
             if isinstance(file, dict):
-                keys = file.keys()
+                keys:List[Any] = file.keys()
                 if "file" not in keys:
                     raise WrongFile('missing "file" key')
                 file_meta = dict.copy(file)
                 del file_meta["file"]
-                file = file["file"]
+                file:Union[str, FileStorage] = file["file"]
             if isinstance(file, str):
                 if (
                     os.path.isfile(file)
                     and os.access(file, os.R_OK)
                     and validate_path(file)
                 ):
-                    mime_type = mime.guess_type(file)
+                    mime_type:Tuple[Optional[str], Optional[str]] = mime.guess_type(file)
                     f = open(file, mode="rb")
                     _, file_name = os.path.split(f.name)
-                    u = FileStorage(f, file_name, content_type=mime_type[0])
+                    u:"FileStorage" = FileStorage(f, file_name, content_type=mime_type[0])
                     temp.append((u, file_meta))
                 else:
                     raise WrongFile(
@@ -119,8 +123,8 @@ class Message(BaseModel):
         :param `headers`: dictionary of headers
         """
         if content_type is None:
-            mime = MimeTypes()
-            content_type = mime.guess_type(filename)
+            mime:"MimeTypes" = MimeTypes()
+            content_type:Tuple[Optional[str], Optional[str]] = mime.guess_type(filename)
 
         fsob: "FileStorage" = FileStorage(
             io.BytesIO(data), filename, content_type=content_type, headers=headers
@@ -130,7 +134,13 @@ class Message(BaseModel):
         return True
 
     @validator("subtype")
-    def validate_subtype(cls, value, values, config, field):
+    def validate_subtype(
+        cls, 
+        value:Any, 
+        values:Dict[Any, Any], 
+        config:Any, 
+        field:Any
+        ) -> str:
         """Validate subtype field."""
         if values.get("template_body"):
             return "html"
@@ -140,8 +150,8 @@ class Message(BaseModel):
         arbitrary_types_allowed = True
 
 
-def validate_path(path):
-    cur_dir = os.path.abspath(os.curdir)
-    requested_path = os.path.abspath(os.path.relpath(path, start=cur_dir))
+def validate_path(path:AnyStr) -> bool:
+    cur_dir:AnyStr = os.path.abspath(os.curdir)
+    requested_path:AnyStr = os.path.abspath(os.path.relpath(path, start=cur_dir))
     common_prefix = os.path.commonprefix([requested_path, cur_dir])
     return common_prefix == cur_dir

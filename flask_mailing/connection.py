@@ -3,14 +3,14 @@ from pydantic import BaseSettings as Settings
 
 from .config import ConnectionConfig
 from .errors import ConnectionErrors, PydanticClassRequired
-
+from typing import *
 
 class Connection:
     """
     Manages Connection to provided email service with its credentials
     """
 
-    def __init__(self, settings: ConnectionConfig):
+    def __init__(self, settings: ConnectionConfig) -> None:
 
         if not issubclass(settings.__class__, Settings):
             raise PydanticClassRequired(
@@ -19,7 +19,7 @@ class Connection:
          """
             )
 
-        self.settings = settings.dict()
+        self.settings:Dict = settings.dict()
 
     async def __aenter__(self):  # setting up a connection
         await self._configure_connection()
@@ -29,9 +29,9 @@ class Connection:
         if not self.settings.get("SUPPRESS_SEND"):  # for test environ
             await self.session.quit()
 
-    async def _configure_connection(self):
+    async def _configure_connection(self) -> None:
         try:
-            self.session = aiosmtplib.SMTP(
+            self.session:"aiosmtplib.SMTP" = aiosmtplib.SMTP(
                 hostname=self.settings.get("MAIL_SERVER"),
                 port=self.settings.get("MAIL_PORT"),
                 use_tls=self.settings.get("MAIL_SSL"),
