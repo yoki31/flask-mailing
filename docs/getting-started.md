@@ -26,9 +26,21 @@ class has following attributes
 ### ```Mail``` class
 class has following attributes and methods
 
-- send_message : The methods has two atributes, message: Message, template_name=None
+- `send_message` : The methods has two atributes, message: Message, template_name=None
     - message : where you define message sturcture for email
     - template_name : if you are using jinja2 consider template_name as well for passing HTML.
+
+- `send_mail` : sending emails with message string and recipients very similar to Django.
+    - subject : A String containing the subject of the message.
+    - message : A string containing the message body.
+    - recipients : A list of strings, each an email address. Each member of recipients will see the other recipients in the “To:” field of the email message.
+    - msgkwargs : the kwargs based parameters for `Message` class.
+
+- `send_mass_mail` : To handle mass mailing.
+    - datatuple : is a tuple in which each element is in this format:
+        ```bash
+        (subject, message, recipients)
+        ```
 
 
 ### ```Message``` class
@@ -36,14 +48,16 @@ class has following attributes
 
 
 -  recipients  : List of recipients.
--  attachments : attachments within mail
--  subject  : subject content of the mail
--  body : body of the message
--  cc : cc recipients of the mail
--  bcc : bcc recipients of the mail
--  reply_to : Reply-To recipients in the mail
--  charset : charset defaults to utf-8
--  subtype : subtype of the mail defaults to plain
+-  attachments : attachments within mail.
+-  subject  : subject content of the mail.
+-  body : body of the message.
+-  template_body: parameters for the jinja template.
+-  template_params: parameters for the jinja template.
+-  cc : cc recipients of the mail.
+-  bcc : bcc recipients of the mail.
+-  reply_to : Reply-To recipients in the mail.
+-  charset : charset defaults to utf-8.
+-  subtype : subtype of the mail defaults to plain.
 - add_recipient : a method to add additional recipients.
 - attach : a method to add additional attachments.
 
